@@ -7,6 +7,8 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -31,6 +33,10 @@ public class SecurityConfig {
 
     private final RsaKeyProperties rsaKeyProperties;
 
+    @Qualifier("magDataSource")
+    @Autowired
+    private DataSource dataSource;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -50,7 +56,8 @@ public class SecurityConfig {
 
     @Bean
     UserDetailsManager users(DataSource dataSource) {
-       /* UserDetails user = User.builder()
+
+      /* UserDetails user = User.builder()
                 .username("user")
                 .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
                 .roles("USER")
@@ -60,11 +67,13 @@ public class SecurityConfig {
                 .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
                 .roles("USER", "ADMIN")
                 .build();
-    */
 
+
+       */
         JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
         //users.createUser(user);
         //users.createUser(admin);
+        //todo delete test users
         return users;
     }
 

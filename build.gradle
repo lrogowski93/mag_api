@@ -21,6 +21,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
 
 	annotationProcessor 'org.projectlombok:lombok'
 
@@ -28,7 +29,6 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 
-tasks.withType(Test).configureEach {
+tasks.named('test') {
 	useJUnitPlatform()
-	outputs.upToDateWhen { false }
 }
