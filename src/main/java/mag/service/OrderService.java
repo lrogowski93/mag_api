@@ -3,6 +3,7 @@ package mag.service;
 
 import lombok.RequiredArgsConstructor;
 import mag.model.OrderHeader;
+import mag.model.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -44,6 +45,19 @@ public class OrderService {
         simpleJdbcCall.withReturnValue(); //todo sprawdz zwracana wartosc
 
         return getNewOrderId(simpleJdbcCall.execute(inParameters));
+    }
+
+    public int addOrderItem(OrderItem orderItem)
+    {
+        SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(magJdbcTemplate)
+                .withProcedureName("RM_DodajPozycjeZamowienia");
+
+        SqlParameterSource inParameters = new MapSqlParameterSource()
+                .addValues(orderItem.getProcedureParams());
+
+        simpleJdbcCall.withReturnValue();
+
+        return (int) simpleJdbcCall.execute(inParameters).get("RETURN_VALUE");
     }
 
 

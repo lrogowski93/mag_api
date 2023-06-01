@@ -62,7 +62,7 @@ public class OrderItem {
         paramTranslations.put("ID_WARIANTU_PRODUKTU",productVariantId);
         paramTranslations.put("ZNACZNIK_CENY",priceType);
         paramTranslations.put("NR_SERII",serialNumber);
-        paramTranslations.put("TYP_TRANSAKCJI_TRANSGRANICZNEJ",crossBorderTransType);
+        paramTranslations.put("TYP_TRANSKACJI_TRANSGRANICZNEJ",crossBorderTransType);
 
         return  paramTranslations;
     }
