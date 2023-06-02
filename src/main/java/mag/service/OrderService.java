@@ -2,8 +2,10 @@ package mag.service;
 
 
 import lombok.RequiredArgsConstructor;
-import mag.model.OrderHeader;
-import mag.model.OrderItem;
+import mag.model.procedure.AddOrderHeaderProcedure;
+import mag.model.procedure.AddOrderItemProcedure;
+import mag.model.procedure.ConfirmOrderProcedure;
+import mag.model.procedure.SumUpOrderProcedure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -34,31 +36,54 @@ public class OrderService {
         return orderId.longValue();
     }
 
-    public long addOrderHeader(OrderHeader orderHeader)
+    public long addOrderHeader(AddOrderHeaderProcedure addOrderHeaderProcedure)
     {
         SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(magJdbcTemplate)
                 .withProcedureName("RM_DodajZamowienie");
 
         SqlParameterSource inParameters = new MapSqlParameterSource()
-                .addValues(orderHeader.getProcedureParams());
+                .addValues(addOrderHeaderProcedure.getProcedureParams());
 
         simpleJdbcCall.withReturnValue(); //todo sprawdz zwracana wartosc
 
         return getNewOrderId(simpleJdbcCall.execute(inParameters));
     }
 
-    public int addOrderItem(OrderItem orderItem)
+    public int addOrderItem(AddOrderItemProcedure addOrderItemProcedure)
     {
-        SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(magJdbcTemplate)
-                .withProcedureName("RM_DodajPozycjeZamowienia");
-
-        SqlParameterSource inParameters = new MapSqlParameterSource()
-                .addValues(orderItem.getProcedureParams());
-
-        simpleJdbcCall.withReturnValue();
-
-        return (int) simpleJdbcCall.execute(inParameters).get("RETURN_VALUE");
+        return callProcedure(
+                addOrderItemProcedure.getProcedureName(),
+                addOrderItemProcedure.getProcedureParams()
+        );
     }
 
+    public int sumUpOrder(SumUpOrderProcedure sumUpOrderProcedure)
+    {
+        return callProcedure(
+                sumUpOrderProcedure.getProcedureName(),
+                sumUpOrderProcedure.getProcedureParams()
+        );
+    }
+
+    public int confirmOrder(ConfirmOrderProcedure confirmOrderProcedure)
+    {
+        return callProcedure(
+                confirmOrderProcedure.getProcedureName(),
+                confirmOrderProcedure.getProcedureParams()
+        );
+
+    }
+
+
+
+    private int callProcedure(String procedureName, Map<String,Object> procedureParams)
+    {
+        SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(magJdbcTemplate)
+                .withProcedureName(procedureName);
+        SqlParameterSource inParameters = new MapSqlParameterSource()
+                .addValues(procedureParams);
+        simpleJdbcCall.withReturnValue();
+        return (int) simpleJdbcCall.execute(inParameters).get("RETURN_VALUE");
+    }
 
 }

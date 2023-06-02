@@ -1,8 +1,7 @@
 package mag.service;
 
-import mag.model.OrderHeader;
+import mag.model.procedure.*;
 
-import mag.model.OrderItem;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,10 +18,12 @@ class OrderServiceTest {
 
 
 
+
+
     @Test
     void shouldAddOrderHeader() {
         //given
-        OrderHeader orderHeader = OrderHeader.builder()
+        AddOrderHeaderProcedure addOrderHeaderProcedure = AddOrderHeaderProcedure.builder()
                 .companyId(1)
                 .customerId(7909)
                 .warehouseId(1)
@@ -34,7 +35,7 @@ class OrderServiceTest {
                 .build();
 
         //when
-        long id = orderService.addOrderHeader(orderHeader);
+        long id = orderService.addOrderHeader(addOrderHeaderProcedure);
         System.out.println("ID:"+id);
         //then
         assertThat(id).isGreaterThan(0L);
@@ -44,7 +45,7 @@ class OrderServiceTest {
     @Test
     void shouldAddOrderItem() {
         //given
-        OrderItem orderItem = OrderItem.builder()
+        AddOrderItemProcedure addOrderItemProcedure = AddOrderItemProcedure.builder()
                 .id(0)
                 .orderId(69939)
                 .itemId(1056533)
@@ -69,10 +70,20 @@ class OrderServiceTest {
                 .build();
 
         //when
-        int id = orderService.addOrderItem(orderItem);
+        int id = orderService.addOrderItem(addOrderItemProcedure);
         //then
         assertThat(id).isEqualTo(0);
 
+    }
+
+    @Test
+    void shouldSumUpOrder(){
+        //given
+        SumUpOrderProcedure sumUpOrderProcedure = new SumUpOrderProcedure(69939);
+        //when
+        int id = orderService.sumUpOrder(sumUpOrderProcedure);
+        //then
+        assertThat(id).isEqualTo(0);
     }
 
 

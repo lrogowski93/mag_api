@@ -1,4 +1,4 @@
-package mag.model;
+package mag.model.procedure;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -10,8 +10,9 @@ import java.util.Map;
 @Getter
 @Setter
 @Builder
-public class OrderHeader {
-    //RM_DodajZamowienie
+public class AddOrderHeaderProcedure {
+
+    private final String procedureName = "RM_DodajZamowienie";
     private int companyId;
     private int customerId;
     private int warehouseId;
