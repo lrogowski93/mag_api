@@ -1,6 +1,5 @@
 package mag.model.procedure;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,18 +8,26 @@ import java.util.Map;
 
 @Getter
 @Setter
-@Builder
 public class AddOrderHeaderProcedure {
 
     private final String procedureName = "RM_DodajZamowienie";
     private int companyId;
     private int customerId;
     private int warehouseId;
-    private int type;
-    private int date;
+    private int type = 1;
+    private long date;
     private int userId;
-    private int registrationMode;
-    private String valueType;
+    private int registrationMode = 0;
+    private String valueType = "Netto";
+
+    public AddOrderHeaderProcedure(int companyId, int customerId, int warehouseId, long date, int userId) {
+        this.companyId = companyId;
+        this.customerId = customerId;
+        this.warehouseId = warehouseId;
+        this.date = date;
+        this.userId = userId;
+
+    }
 
     public Map<String, Object> getProcedureParams(){
         Map<String,Object> paramTranslations = new HashMap<>();

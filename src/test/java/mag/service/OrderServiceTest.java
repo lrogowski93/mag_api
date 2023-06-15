@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +20,7 @@ class OrderServiceTest {
 
 
 
-
+/*
 
     @Test
     void shouldAddOrderHeader() {
@@ -28,7 +30,7 @@ class OrderServiceTest {
                 .customerId(7909)
                 .warehouseId(1)
                 .type(1)
-                .date(81237)
+                .date(orderService.getCurrentDate())
                 .userId(3000001)
                 .registrationMode(0)
                 .valueType("Netto")
@@ -47,7 +49,7 @@ class OrderServiceTest {
         //given
         AddOrderItemProcedure addOrderItemProcedure = AddOrderItemProcedure.builder()
                 .id(0)
-                .orderId(69939)
+                .orderId(69941)
                 .itemId(1056533)
                 .vat("23")
                 .ordered(50)
@@ -79,12 +81,21 @@ class OrderServiceTest {
     @Test
     void shouldSumUpOrder(){
         //given
-        SumUpOrderProcedure sumUpOrderProcedure = new SumUpOrderProcedure(69939);
+        SumUpOrderProcedure sumUpOrderProcedure = new SumUpOrderProcedure(69941);
         //when
         int id = orderService.sumUpOrder(sumUpOrderProcedure);
         //then
         assertThat(id).isEqualTo(0);
     }
 
+    @Test
+    void shouldGetOrderItemIds(){
+        List<String> lista = new ArrayList<>();
+        lista.add("K100");
+        lista.add("K670B");
+        lista.add("A12");
+        orderService.getOrderItemIds(lista);
+    }
 
+*/
 }

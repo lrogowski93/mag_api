@@ -1,6 +1,5 @@
 package mag.model.procedure;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,34 +9,33 @@ import java.util.Map;
 
 @Getter
 @Setter
-@Builder
 public class ConfirmOrderProcedure{
 
     private final String procedureName = "RM_ZatwierdzZamowienie";
     private long orderId;
     private long customerId;
-    private int docTypeId;
-    private String docNumber;
-    private String docNumberFormat;
-    private int docNumberPeriod;
-    private int autoNum;
-    private int numNotDependent;
+    private int docTypeId = 12;
+    private String docNumber = "<auto> ";
+    private String docNumberFormat = "ZO ####/$$";
+    private int docNumberPeriod = 2;
+    private int autoNum = 1;
+    private int numNotDependent = 1;
     private int autoNum2;
     private int companyId;
     private int warehouseId;
-    private int date;
-    private int completionDate;
+    private long date;
+    private long completionDate;
     private BigDecimal advancePayment;
-    private int priority;
-    private int autoReservation;
+    private int priority = 2;
+    private int autoReservation = 1;
     private String customerOrderNumber;
-    private int orderType;
+    private int orderType = 1;
     private long employeeId;
-    private BigDecimal currencyConversion;
+    private BigDecimal currencyConversion = new BigDecimal(1);
     private int currencyValueDate;
     private String currency;
     private int currencyDoc;
-    private int status;
+    private int status = 1;
     private int registrationMode;
     private BigDecimal markup;
     private int markupSign;
@@ -46,11 +44,22 @@ public class ConfirmOrderProcedure{
     private String additionalInfo;
     private String orderingPersonName;
     private long contactPersonId;
-    private String paymentMethod;
-    private int daysToPay;
-    private int invoiceReceipt;
+    private String paymentMethod = "przelew";
+    private int daysToPay = 7;
+    private int invoiceReceipt = 1;
     private String shipmentNumber;
     private long shipmentOperatorId;
+
+    public ConfirmOrderProcedure(long orderId, long customerId, int companyId, int warehouseId, long date, long employeeId, String notes) {
+        this.orderId = orderId;
+        this.customerId = customerId;
+        this.companyId = companyId;
+        this.warehouseId = warehouseId;
+        this.date = date;
+        this.completionDate = date;
+        this.employeeId = employeeId;
+        this.notes = notes;
+    }
 
     public Map<String, Object> getProcedureParams() {
         Map<String, Object> paramTranslations = new HashMap<>();

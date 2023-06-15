@@ -2,6 +2,10 @@ package mag.service;
 
 
 import lombok.RequiredArgsConstructor;
+import mag.mapper.ItemRowMapper;
+import mag.model.AddOrderRequest;
+import mag.model.AddOrderResponse;
+import mag.model.OrderItem;
 import mag.model.procedure.AddOrderHeaderProcedure;
 import mag.model.procedure.AddOrderItemProcedure;
 import mag.model.procedure.ConfirmOrderProcedure;
@@ -11,32 +15,38 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
-    @Autowired
     @Qualifier("magJdbcTemplate")
+    @Autowired
     private final JdbcTemplate magJdbcTemplate;
 
+    @Qualifier("magJdbcTemplateNamedParameter")
+    @Autowired
+    private final NamedParameterJdbcTemplate magJdbcTemplateNamedParameter;
 
     private long getNewOrderId(Map<String,Object> outParameters)
     {
-        Object test = ((Map)((List)outParameters.get("#result-set-1")).get(0)).get("");
-        BigDecimal orderId = (BigDecimal) test;
+        Object resultSet = ((Map)((List)outParameters.get("#result-set-1")).get(0)).get("");
+        BigDecimal orderId = (BigDecimal) resultSet;
         return orderId.longValue();
     }
 
-    public long addOrderHeader(AddOrderHeaderProcedure addOrderHeaderProcedure)
+    private long addOrderHeader(AddOrderHeaderProcedure addOrderHeaderProcedure)
     {
         SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(magJdbcTemplate)
                 .withProcedureName("RM_DodajZamowienie");
@@ -44,12 +54,12 @@ public class OrderService {
         SqlParameterSource inParameters = new MapSqlParameterSource()
                 .addValues(addOrderHeaderProcedure.getProcedureParams());
 
-        simpleJdbcCall.withReturnValue(); //todo sprawdz zwracana wartosc
+        simpleJdbcCall.withReturnValue(); //todo check return value
 
         return getNewOrderId(simpleJdbcCall.execute(inParameters));
     }
 
-    public int addOrderItem(AddOrderItemProcedure addOrderItemProcedure)
+    private int addOrderItem(AddOrderItemProcedure addOrderItemProcedure)
     {
         return callProcedure(
                 addOrderItemProcedure.getProcedureName(),
@@ -57,7 +67,7 @@ public class OrderService {
         );
     }
 
-    public int sumUpOrder(SumUpOrderProcedure sumUpOrderProcedure)
+    private int sumUpOrder(SumUpOrderProcedure sumUpOrderProcedure)
     {
         return callProcedure(
                 sumUpOrderProcedure.getProcedureName(),
@@ -65,7 +75,7 @@ public class OrderService {
         );
     }
 
-    public int confirmOrder(ConfirmOrderProcedure confirmOrderProcedure)
+    private int confirmOrder(ConfirmOrderProcedure confirmOrderProcedure)
     {
         return callProcedure(
                 confirmOrderProcedure.getProcedureName(),
@@ -84,6 +94,78 @@ public class OrderService {
                 .addValues(procedureParams);
         simpleJdbcCall.withReturnValue();
         return (int) simpleJdbcCall.execute(inParameters).get("RETURN_VALUE");
+    }
+
+    private long getCurrentDate()
+    {
+        return ChronoUnit.DAYS.between(LocalDate.of(1800,12,28),LocalDate.now());
+    }
+
+    private List<OrderItem> getOrderItemIds(List<String> orderItemsIndexes){
+
+        String sqlQuery = "SELECT ID_ARTYKULU, INDEKS_HANDLOWY FROM ARTYKUL WHERE INDEKS_HANDLOWY IN (:indexes) AND ID_MAGAZYNU=1";
+        Map<String,List> paramMap = Collections.singletonMap("indexes", orderItemsIndexes);
+
+        List<OrderItem> orderItemList = magJdbcTemplateNamedParameter.query(sqlQuery, paramMap, new ItemRowMapper());
+
+        return orderItemList;
+    }
+
+    private List<String> extractIndexes(List<OrderItem> orderItems){
+        return orderItems.stream().map(OrderItem::getIndex).collect(Collectors.toList());
+    }
+
+    private OrderItem setItemQuantityAndDesc(OrderItem loopItem, List<OrderItem> orderItems){
+        OrderItem singleFound = orderItems.stream()
+                .filter(
+                        item -> item.getIndex().equals(loopItem.getIndex())
+                ).findFirst().orElseThrow();
+        //todo check if item not found
+
+        loopItem.setQuantity(singleFound.getQuantity());
+        loopItem.setDescription(singleFound.getDescription());
+
+        return loopItem;
+    }
+
+    public AddOrderResponse addOrder (AddOrderRequest request)
+    {
+        long newOrderId = addOrderHeader(
+                new AddOrderHeaderProcedure(
+                        1,
+                        7909,
+                        1,
+                        getCurrentDate(),
+                        3000001)
+        );
+
+        List<String> indexes = extractIndexes(request.getOrderItems());
+        List<OrderItem> foundOrderItemList = getOrderItemIds(indexes);
+
+        for(OrderItem loopItem : foundOrderItemList)
+        {
+            setItemQuantityAndDesc(loopItem,request.getOrderItems());
+
+            addOrderItem(new AddOrderItemProcedure(
+                    newOrderId,
+                    loopItem.getId(),
+                    "23",
+                    loopItem.getQuantity(),
+                    loopItem.getDescription()
+            ));
+        }
+
+        sumUpOrder(new SumUpOrderProcedure(newOrderId));
+        confirmOrder(new ConfirmOrderProcedure(
+                newOrderId,
+                7909,
+                1,1,
+                getCurrentDate(),
+                3000001,
+                request.getNotes())
+        );
+
+        return AddOrderResponse.builder().status("OK").build();
     }
 
 }

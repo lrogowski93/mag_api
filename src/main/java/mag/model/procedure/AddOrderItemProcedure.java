@@ -1,6 +1,5 @@
 package mag.model.procedure;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,6 @@ import java.util.Map;
 
 @Getter
 @Setter
-@Builder
 public class AddOrderItemProcedure {
 
     private final String procedureName = "RM_DodajPozycjeZamowienia";
@@ -22,21 +20,30 @@ public class AddOrderItemProcedure {
     private int fulfilled;
     private int reserved;
     private int toReserve;
-    private BigDecimal netValue;
-    private BigDecimal grossValue;
-    private BigDecimal currencyNetVal;
-    private BigDecimal currencyGrossVal;
-    private int conversion;
-    private String unit;
-    private BigDecimal markup;
+    private BigDecimal netValue = BigDecimal.ZERO;
+    private BigDecimal grossValue = BigDecimal.ZERO;
+    private BigDecimal currencyNetVal = BigDecimal.ZERO;
+    private BigDecimal currencyGrossVal = BigDecimal.ZERO;
+    private int conversion = 1;
+    private String unit = "szt.";
+    private BigDecimal markup = BigDecimal.ZERO;
     private String description;
     private int markupSign;
     private int registrationMode;
     private int deliveryId;
     private int productVariantId;
-    private Character priceType;
+    private String priceType = "i";
     private String serialNumber;
-    private String crossBorderTransType;
+    private String crossBorderTransType = "Nie dotyczy";
+
+    public AddOrderItemProcedure(long orderId, long itemId, String vat, int ordered, String description) {
+        this.orderId = orderId;
+        this.itemId = itemId;
+        this.vat = vat;
+        this.ordered = ordered;
+        this.toReserve = ordered;
+        this.description = description;
+    }
 
     public Map<String, Object> getProcedureParams() {
         Map<String, Object> paramTranslations = new HashMap<>();

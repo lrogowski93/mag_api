@@ -10,7 +10,7 @@ import java.util.Map;
 @Getter
 public class SumUpOrderProcedure {
 
-    private final String procedureName="RM_RM_SumujZamowienie";
+    private final String procedureName="RM_SumujZamowienie";
     private long orderId;
 
     public Map<String, Object> getProcedureParams() {

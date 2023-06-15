@@ -11,6 +11,6 @@ import java.util.List;
 @Builder
 public class AddOrderRequest {
     private List<OrderItem> orderItems;
-    String notes;
+    private String notes;
 
 }

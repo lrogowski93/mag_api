@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 
 import javax.sql.DataSource;
@@ -32,17 +33,19 @@ public class DatabaseConfig {
     }
 
     @Primary
-    //@Autowired
     @Bean(name = "authJdbcTemplate")
     public JdbcTemplate authJdbcTemplate(@Qualifier("authDataSource") DataSource authDataSource) {
         return new JdbcTemplate(authDataSource);
     }
 
     @Bean(name ="magJdbcTemplate")
-    //@Autowired
     public JdbcTemplate magJdbcTemplate(@Qualifier("magDataSource") DataSource magDataSource) {
         return new JdbcTemplate(magDataSource);
     }
 
+    @Bean(name ="magJdbcTemplateNamedParameter")
+    public NamedParameterJdbcTemplate magJdbcTemplateNamedParameter(@Qualifier("magDataSource") DataSource magDataSource) {
+        return new NamedParameterJdbcTemplate(magDataSource);
+    }
 
 }
