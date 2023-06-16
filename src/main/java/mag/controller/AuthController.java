@@ -1,5 +1,6 @@
 package mag.controller;
 
+import mag.model.TokenResponse;
 import mag.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -13,8 +14,8 @@ public class AuthController {
 private final TokenService tokenService;
 
 	@PostMapping("/login")
-	public String token(Authentication authentication) {
-		return tokenService.generateToken(authentication);
+	public TokenResponse getToken(Authentication authentication) {
+		return tokenService.getTokenResponse(authentication);
 	}
 
 }

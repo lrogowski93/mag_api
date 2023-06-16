@@ -1,6 +1,7 @@
 package mag.service;
 
 import lombok.RequiredArgsConstructor;
+import mag.model.TokenResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +20,7 @@ public class TokenService {
     @Value("${jwt.token.expiration}")
     long expirationTime;
 
-    public String generateToken(Authentication authentication) {
+    private String generateToken(Authentication authentication) {
         Instant now = Instant.now();
         String scope = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -30,10 +31,12 @@ public class TokenService {
                 .expiresAt(now.plusSeconds(expirationTime))
                 .subject(authentication.getName())
                 .claim("scope", scope)
-                //.claim("","")
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
+    public TokenResponse getTokenResponse(Authentication authentication){
+        return new TokenResponse(generateToken(authentication), expirationTime);
+    }
 
 }

@@ -120,7 +120,6 @@ public class OrderService {
                 .filter(
                         item -> item.getIndex().equals(loopItem.getIndex())
                 ).findFirst().orElseThrow();
-        //todo check if item not found
 
         loopItem.setQuantity(singleFound.getQuantity());
         loopItem.setDescription(singleFound.getDescription());

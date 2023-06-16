@@ -28,7 +28,7 @@ public class DatabaseConfig {
 
     @Bean(name = "magDataSource")
     @ConfigurationProperties(prefix = "mag.datasource")
-    public DataSource madDataSource(){
+    public DataSource magDataSource(){
         return DataSourceBuilder.create().build();
     }
 
