@@ -13,7 +13,7 @@ public class AuthController {
 
 private final TokenService tokenService;
 
-	@PostMapping("/login")
+	@PostMapping("/signin")
 	public TokenResponse getToken(Authentication authentication) {
 		return tokenService.getTokenResponse(authentication);
 	}

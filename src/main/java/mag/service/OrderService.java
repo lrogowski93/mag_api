@@ -10,14 +10,17 @@ import mag.model.procedure.AddOrderHeaderProcedure;
 import mag.model.procedure.AddOrderItemProcedure;
 import mag.model.procedure.ConfirmOrderProcedure;
 import mag.model.procedure.SumUpOrderProcedure;
+import mag.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,6 +34,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final UserRepository userRepository;
+
     @Qualifier("magJdbcTemplate")
     @Autowired
     private final JdbcTemplate magJdbcTemplate;
@@ -38,6 +43,15 @@ public class OrderService {
     @Qualifier("magJdbcTemplateNamedParameter")
     @Autowired
     private final NamedParameterJdbcTemplate magJdbcTemplateNamedParameter;
+
+    @Value("${mag.cfg.companyid}")
+    int companyId;
+    @Value("${mag.cfg.warehouseid}")
+    int warehouseId;
+    @Value("${mag.cfg.userid}")
+    int userId;
+    @Value("${mag.cfg.employeeid}")
+    int employeeId;
 
     private long getNewOrderId(Map<String,Object> outParameters)
     {
@@ -127,15 +141,16 @@ public class OrderService {
         return loopItem;
     }
 
-    public AddOrderResponse addOrder (AddOrderRequest request)
+    public AddOrderResponse addOrder (AddOrderRequest request, Authentication authentication)
     {
+        long magId = getMagId(authentication.getName());
         long newOrderId = addOrderHeader(
                 new AddOrderHeaderProcedure(
-                        1,
-                        7909,
-                        1,
+                        companyId,
+                        magId,
+                        warehouseId,
                         getCurrentDate(),
-                        3000001)
+                        userId)
         );
 
         List<String> indexes = extractIndexes(request.getOrderItems());
@@ -148,7 +163,6 @@ public class OrderService {
             addOrderItem(new AddOrderItemProcedure(
                     newOrderId,
                     loopItem.getId(),
-                    "23",
                     loopItem.getQuantity(),
                     loopItem.getDescription()
             ));
@@ -157,14 +171,19 @@ public class OrderService {
         sumUpOrder(new SumUpOrderProcedure(newOrderId));
         confirmOrder(new ConfirmOrderProcedure(
                 newOrderId,
-                7909,
-                1,1,
+                magId,
+                companyId,
+                warehouseId,
                 getCurrentDate(),
-                3000001,
+                employeeId,
                 request.getNotes())
         );
 
         return AddOrderResponse.builder().status("OK").build();
+    }
+
+    private long getMagId(String username){
+        return userRepository.findByUsername(username).get().getMagId();
     }
 
 }

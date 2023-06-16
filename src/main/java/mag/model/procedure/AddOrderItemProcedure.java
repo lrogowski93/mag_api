@@ -15,7 +15,7 @@ public class AddOrderItemProcedure {
     private long id;
     private long orderId;
     private long itemId;
-    private String vat;
+    private String vat = "23";
     private int ordered;
     private int fulfilled;
     private int reserved;
@@ -36,10 +36,9 @@ public class AddOrderItemProcedure {
     private String serialNumber;
     private String crossBorderTransType = "Nie dotyczy";
 
-    public AddOrderItemProcedure(long orderId, long itemId, String vat, int ordered, String description) {
+    public AddOrderItemProcedure(long orderId, long itemId, int ordered, String description) {
         this.orderId = orderId;
         this.itemId = itemId;
-        this.vat = vat;
         this.ordered = ordered;
         this.toReserve = ordered;
         this.description = description;

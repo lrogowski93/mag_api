@@ -12,7 +12,7 @@ public class AddOrderHeaderProcedure {
 
     private final String procedureName = "RM_DodajZamowienie";
     private int companyId;
-    private int customerId;
+    private long customerId;
     private int warehouseId;
     private int type = 1;
     private long date;
@@ -20,7 +20,7 @@ public class AddOrderHeaderProcedure {
     private int registrationMode = 0;
     private String valueType = "Netto";
 
-    public AddOrderHeaderProcedure(int companyId, int customerId, int warehouseId, long date, int userId) {
+    public AddOrderHeaderProcedure(int companyId, long customerId, int warehouseId, long date, int userId) {
         this.companyId = companyId;
         this.customerId = customerId;
         this.warehouseId = warehouseId;
