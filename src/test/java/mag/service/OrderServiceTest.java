@@ -1,101 +1,49 @@
 package mag.service;
 
-import mag.model.procedure.*;
+import lombok.RequiredArgsConstructor;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 @SpringBootTest
+@RequiredArgsConstructor
 class OrderServiceTest {
-    @Autowired
-    private OrderService orderService;
-
 
 
 /*
+   @Test
+    void shouldAddOrderHeader()
+   {
+       //given
 
-    @Test
-    void shouldAddOrderHeader() {
-        //given
-        AddOrderHeaderProcedure addOrderHeaderProcedure = AddOrderHeaderProcedure.builder()
-                .companyId(1)
-                .customerId(7909)
-                .warehouseId(1)
-                .type(1)
-                .date(orderService.getCurrentDate())
-                .userId(3000001)
-                .registrationMode(0)
-                .valueType("Netto")
-                .build();
+       User user = new User();
+       user.setMagId(7909);
+       user.setEnabled(true);
+       user.setUsername("user");
 
-        //when
-        long id = orderService.addOrderHeader(addOrderHeaderProcedure);
-        System.out.println("ID:"+id);
-        //then
-        assertThat(id).isGreaterThan(0L);
+       OrderItem orderItem1 = OrderItem.builder()
+               .id(123L)
+               .index("A1")
+               .description("desc")
+               .quantity(100)
+               .build();
 
-    }
+       OrderItem orderItem2 = OrderItem.builder()
+               .id(456L)
+               .index("B2")
+               .description("desc")
+               .quantity(200)
+               .build();
 
-    @Test
-    void shouldAddOrderItem() {
-        //given
-        AddOrderItemProcedure addOrderItemProcedure = AddOrderItemProcedure.builder()
-                .id(0)
-                .orderId(69941)
-                .itemId(1056533)
-                .vat("23")
-                .ordered(50)
-                .fulfilled(0)
-                .reserved(50)
-                .toReserve(50)
-                .netValue(BigDecimal.ZERO)
-                .grossValue(BigDecimal.ZERO)
-                .currencyNetVal(BigDecimal.ZERO)
-                .currencyGrossVal(BigDecimal.ZERO)
-                .conversion(1)
-                .unit("szt.")
-                .markup(BigDecimal.ZERO)
-                .markupSign(0)
-                .registrationMode(0)
-                .deliveryId(0)
-                .productVariantId(0)
-                //.priceType('i')
-                .crossBorderTransType("Nie dotyczy")
-                .build();
+       List<OrderItem> orderItemList = List.of(orderItem1,orderItem2);
 
-        //when
-        int id = orderService.addOrderItem(addOrderItemProcedure);
-        //then
-        assertThat(id).isEqualTo(0);
+       AddOrderRequest addOrderRequest = AddOrderRequest.builder()
+               .notes("test note")
+               .orderItems(orderItemList)
+               .build();
 
-    }
-
-    @Test
-    void shouldSumUpOrder(){
-        //given
-        SumUpOrderProcedure sumUpOrderProcedure = new SumUpOrderProcedure(69941);
-        //when
-        int id = orderService.sumUpOrder(sumUpOrderProcedure);
-        //then
-        assertThat(id).isEqualTo(0);
-    }
-
-    @Test
-    void shouldGetOrderItemIds(){
-        List<String> lista = new ArrayList<>();
-        lista.add("K100");
-        lista.add("K670B");
-        lista.add("A12");
-        orderService.getOrderItemIds(lista);
-    }
 
 */
+
+
 }

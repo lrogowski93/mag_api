@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class ConfirmOrderProcedure{
+public class ConfirmOrderProcedure implements GenericProcedure{
 
     private final String procedureName = "RM_ZatwierdzZamowienie";
     private long orderId;
@@ -60,7 +60,7 @@ public class ConfirmOrderProcedure{
         this.employeeId = employeeId;
         this.notes = notes;
     }
-
+    @Override
     public Map<String, Object> getProcedureParams() {
         Map<String, Object> paramTranslations = new HashMap<>();
         paramTranslations.put("ID_ZAMOWIENIA",orderId);

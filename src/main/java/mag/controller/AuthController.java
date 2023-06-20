@@ -1,6 +1,5 @@
 package mag.controller;
 
-import mag.model.TokenResponse;
 import mag.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

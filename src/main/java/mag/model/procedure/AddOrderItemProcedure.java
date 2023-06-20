@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class AddOrderItemProcedure {
+public class AddOrderItemProcedure implements GenericProcedure{
 
     private final String procedureName = "RM_DodajPozycjeZamowienia";
     private long id;
@@ -32,7 +32,7 @@ public class AddOrderItemProcedure {
     private int registrationMode;
     private int deliveryId;
     private int productVariantId;
-    private String priceType = "i";
+    private String priceType = "k";
     private String serialNumber;
     private String crossBorderTransType = "Nie dotyczy";
 
@@ -43,7 +43,7 @@ public class AddOrderItemProcedure {
         this.toReserve = ordered;
         this.description = description;
     }
-
+    @Override
     public Map<String, Object> getProcedureParams() {
         Map<String, Object> paramTranslations = new HashMap<>();
 

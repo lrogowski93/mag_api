@@ -1,20 +1,15 @@
 package mag.service;
 
-
-import lombok.RequiredArgsConstructor;
-import mag.mapper.ItemRowMapper;
-import mag.model.AddOrderRequest;
-import mag.model.AddOrderResponse;
+import mag.controller.CheckOrderResponse;
+import mag.controller.AddOrderRequest;
+import mag.controller.AddOrderResponse;
 import mag.model.OrderItem;
-import mag.model.procedure.AddOrderHeaderProcedure;
-import mag.model.procedure.AddOrderItemProcedure;
-import mag.model.procedure.ConfirmOrderProcedure;
-import mag.model.procedure.SumUpOrderProcedure;
+import mag.model.procedure.*;
 import mag.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -29,107 +24,96 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
-@RequiredArgsConstructor
+
 public class OrderService {
 
     private final UserRepository userRepository;
-
-    @Qualifier("magJdbcTemplate")
-    @Autowired
     private final JdbcTemplate magJdbcTemplate;
-
-    @Qualifier("magJdbcTemplateNamedParameter")
-    @Autowired
     private final NamedParameterJdbcTemplate magJdbcTemplateNamedParameter;
 
     @Value("${mag.cfg.companyid}")
-    int companyId;
+    private int companyId;
     @Value("${mag.cfg.warehouseid}")
-    int warehouseId;
+    private int warehouseId;
     @Value("${mag.cfg.userid}")
-    int userId;
+    private int userId;
     @Value("${mag.cfg.employeeid}")
-    int employeeId;
+    private int employeeId;
 
-    private long getNewOrderId(Map<String,Object> outParameters)
-    {
-        Object resultSet = ((Map)((List)outParameters.get("#result-set-1")).get(0)).get("");
+    public OrderService(UserRepository userRepository,
+                        @Qualifier("magJdbcTemplate") JdbcTemplate magJdbcTemplate,
+                        @Qualifier("magJdbcTemplateNamedParameter") NamedParameterJdbcTemplate magJdbcTemplateNamedParameter) {
+        this.userRepository = userRepository;
+        this.magJdbcTemplate = magJdbcTemplate;
+        this.magJdbcTemplateNamedParameter = magJdbcTemplateNamedParameter;
+    }
+
+    private long getNewOrderId(Map<String, Object> outParameters) {
+        Object resultSet = ((Map<?, ?>) ((List<?>) outParameters.get("#result-set-1")).get(0)).get("");
         BigDecimal orderId = (BigDecimal) resultSet;
         return orderId.longValue();
     }
 
-    private long addOrderHeader(AddOrderHeaderProcedure addOrderHeaderProcedure)
-    {
+    private long addOrderHeader(AddOrderHeaderProcedure addOrderHeaderProcedure) {
+        return callProcedure(addOrderHeaderProcedure).getNewOrderId();
+    }
+
+    private int addOrderItem(AddOrderItemProcedure addOrderItemProcedure) {
+        return callProcedure(addOrderItemProcedure).getReturnValue();
+    }
+
+    private int sumUpOrder(SumUpOrderProcedure sumUpOrderProcedure) {
+        return callProcedure(sumUpOrderProcedure).getReturnValue();
+    }
+
+    private int confirmOrder(ConfirmOrderProcedure confirmOrderProcedure) {
+        return callProcedure(confirmOrderProcedure).getReturnValue();
+    }
+
+    private int setCatalogPrices(SetCatalogPricesProcedure setCatalogPricesProcedure) {
+        return callProcedure(setCatalogPricesProcedure).getReturnValue();
+    }
+
+    private ProcedureReturnValue callProcedure(GenericProcedure genericProcedure) {
         SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(magJdbcTemplate)
-                .withProcedureName("RM_DodajZamowienie");
-
+                .withProcedureName(genericProcedure.getProcedureName());
         SqlParameterSource inParameters = new MapSqlParameterSource()
-                .addValues(addOrderHeaderProcedure.getProcedureParams());
-
-        simpleJdbcCall.withReturnValue(); //todo check return value
-
-        return getNewOrderId(simpleJdbcCall.execute(inParameters));
-    }
-
-    private int addOrderItem(AddOrderItemProcedure addOrderItemProcedure)
-    {
-        return callProcedure(
-                addOrderItemProcedure.getProcedureName(),
-                addOrderItemProcedure.getProcedureParams()
-        );
-    }
-
-    private int sumUpOrder(SumUpOrderProcedure sumUpOrderProcedure)
-    {
-        return callProcedure(
-                sumUpOrderProcedure.getProcedureName(),
-                sumUpOrderProcedure.getProcedureParams()
-        );
-    }
-
-    private int confirmOrder(ConfirmOrderProcedure confirmOrderProcedure)
-    {
-        return callProcedure(
-                confirmOrderProcedure.getProcedureName(),
-                confirmOrderProcedure.getProcedureParams()
-        );
-
-    }
-
-
-
-    private int callProcedure(String procedureName, Map<String,Object> procedureParams)
-    {
-        SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(magJdbcTemplate)
-                .withProcedureName(procedureName);
-        SqlParameterSource inParameters = new MapSqlParameterSource()
-                .addValues(procedureParams);
+                .addValues(genericProcedure.getProcedureParams());
         simpleJdbcCall.withReturnValue();
-        return (int) simpleJdbcCall.execute(inParameters).get("RETURN_VALUE");
+
+        Map<String, Object> outParameters = simpleJdbcCall.execute(inParameters);
+        ProcedureReturnValue returnValue = new ProcedureReturnValue((int) outParameters.get("RETURN_VALUE"));
+
+        if (genericProcedure.getClass().equals(AddOrderHeaderProcedure.class)) {
+            returnValue.setNewOrderId(getNewOrderId(outParameters));
+        }
+
+        return returnValue;
     }
 
-    private long getCurrentDate()
-    {
-        return ChronoUnit.DAYS.between(LocalDate.of(1800,12,28),LocalDate.now());
+    private long getCurrentDate() {
+        return ChronoUnit.DAYS.between(LocalDate.of(1800, 12, 28), LocalDate.now());
     }
 
-    private List<OrderItem> getOrderItemIds(List<String> orderItemsIndexes){
+    private List<OrderItem> getOrderItemIds(List<String> orderItemsIndexes) {
 
         String sqlQuery = "SELECT ID_ARTYKULU, INDEKS_HANDLOWY FROM ARTYKUL WHERE INDEKS_HANDLOWY IN (:indexes) AND ID_MAGAZYNU=1";
-        Map<String,List> paramMap = Collections.singletonMap("indexes", orderItemsIndexes);
+        Map<String, List> paramMap = Collections.singletonMap("indexes", orderItemsIndexes);
 
-        List<OrderItem> orderItemList = magJdbcTemplateNamedParameter.query(sqlQuery, paramMap, new ItemRowMapper());
-
-        return orderItemList;
+        return magJdbcTemplateNamedParameter.query(sqlQuery, paramMap, (rs, rowNum) ->
+                OrderItem.builder()
+                        .id(rs.getLong("ID_ARTYKULU"))
+                        .index(rs.getString("INDEKS_HANDLOWY"))
+                        .build()
+        );
     }
 
-    private List<String> extractIndexes(List<OrderItem> orderItems){
+    private List<String> extractIndexes(List<OrderItem> orderItems) {
         return orderItems.stream().map(OrderItem::getIndex).collect(Collectors.toList());
     }
 
-    private OrderItem setItemQuantityAndDesc(OrderItem loopItem, List<OrderItem> orderItems){
+    private OrderItem setItemQuantityAndDesc(OrderItem loopItem, List<OrderItem> orderItems) {
         OrderItem singleFound = orderItems.stream()
                 .filter(
                         item -> item.getIndex().equals(loopItem.getIndex())
@@ -141,8 +125,30 @@ public class OrderService {
         return loopItem;
     }
 
-    public AddOrderResponse addOrder (AddOrderRequest request, Authentication authentication)
-    {
+    private long getMagId(String username) {
+        return userRepository.findByUsername(username).get().getMagId();
+    }
+
+    private int processOrderItems(long magId, long newOrderId, List<OrderItem> foundOrderItemList, List<OrderItem> orderItems) {
+        int returnValues = 0;
+
+        for (OrderItem loopItem : foundOrderItemList) {
+            setItemQuantityAndDesc(loopItem, orderItems);
+            returnValues += addOrderItem(new AddOrderItemProcedure(
+                    newOrderId,
+                    loopItem.getId(),
+                    loopItem.getQuantity(),
+                    loopItem.getDescription()
+            ));
+        }
+
+        returnValues += setCatalogPrices(new SetCatalogPricesProcedure(newOrderId, magId));
+        returnValues += sumUpOrder(new SumUpOrderProcedure(newOrderId));
+
+        return returnValues;
+    }
+
+    public AddOrderResponse addOrder(AddOrderRequest request, Authentication authentication) {
         long magId = getMagId(authentication.getName());
         long newOrderId = addOrderHeader(
                 new AddOrderHeaderProcedure(
@@ -153,23 +159,11 @@ public class OrderService {
                         userId)
         );
 
-        List<String> indexes = extractIndexes(request.getOrderItems());
-        List<OrderItem> foundOrderItemList = getOrderItemIds(indexes);
+        List<OrderItem> foundOrderItemList = getOrderItemIds(extractIndexes(request.getOrderItems()));
 
-        for(OrderItem loopItem : foundOrderItemList)
-        {
-            setItemQuantityAndDesc(loopItem,request.getOrderItems());
+        int returnValues = processOrderItems(magId, newOrderId, foundOrderItemList, request.getOrderItems());
 
-            addOrderItem(new AddOrderItemProcedure(
-                    newOrderId,
-                    loopItem.getId(),
-                    loopItem.getQuantity(),
-                    loopItem.getDescription()
-            ));
-        }
-
-        sumUpOrder(new SumUpOrderProcedure(newOrderId));
-        confirmOrder(new ConfirmOrderProcedure(
+        returnValues += confirmOrder(new ConfirmOrderProcedure(
                 newOrderId,
                 magId,
                 companyId,
@@ -179,11 +173,40 @@ public class OrderService {
                 request.getNotes())
         );
 
-        return AddOrderResponse.builder().status("OK").build();
+        return AddOrderResponse.builder()
+                .orderId(newOrderId)
+                .orderItems(foundOrderItemList)
+                .status(returnValues == 0 ? "OK" : "Errors occurred").build();
     }
 
-    private long getMagId(String username){
-        return userRepository.findByUsername(username).get().getMagId();
+    private boolean isOrderConfirmed(Long orderId) {
+        try {
+            String sqlQuery = "SELECT STATUS_ZAM FROM ZAMOWIENIE WHERE ID_ZAMOWIENIA=?";
+            String orderStatus = magJdbcTemplate.queryForObject(sqlQuery, String.class, orderId);
+            return orderStatus.equals("V");
+        } catch (EmptyResultDataAccessException ex) {
+            return false;
+        }
     }
 
+    private List<OrderItem> getConfirmedOrderItems(Long orderId) {
+
+        String sqlQuery = "SELECT a.INDEKS_HANDLOWY, p.ZAREZERWOWANO, p.OPIS FROM POZYCJA_ZAMOWIENIA p" +
+                " LEFT JOIN ARTYKUL a ON(a.ID_ARTYKULU=p.ID_ARTYKULU) WHERE ID_ZAMOWIENIA=?";
+
+        return magJdbcTemplate.query(sqlQuery, (rs, rowNum) ->
+                        OrderItem.builder()
+                                .index(rs.getString("INDEKS_HANDLOWY"))
+                                .quantity(rs.getInt("ZAREZERWOWANO"))
+                                .description(rs.getString("OPIS"))
+                                .build(),
+                orderId);
+    }
+
+    public CheckOrderResponse checkOrder(Long orderId) {
+        if (isOrderConfirmed(orderId)) {
+            return new CheckOrderResponse(getConfirmedOrderItems(orderId));
+        }
+        return new CheckOrderResponse();
+    }
 }

@@ -8,11 +8,12 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class SumUpOrderProcedure {
+public class SumUpOrderProcedure implements GenericProcedure{
 
     private final String procedureName="RM_SumujZamowienie";
     private long orderId;
 
+    @Override
     public Map<String, Object> getProcedureParams() {
         Map<String, Object> paramTranslations = new HashMap<>();
         paramTranslations.put("id_zamowienia",orderId);

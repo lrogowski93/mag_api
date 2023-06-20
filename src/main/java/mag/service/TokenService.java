@@ -1,7 +1,7 @@
 package mag.service;
 
 import lombok.RequiredArgsConstructor;
-import mag.model.TokenResponse;
+import mag.controller.TokenResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

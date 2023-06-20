@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class AddOrderHeaderProcedure {
+public class AddOrderHeaderProcedure implements GenericProcedure {
 
     private final String procedureName = "RM_DodajZamowienie";
     private int companyId;
@@ -28,7 +28,7 @@ public class AddOrderHeaderProcedure {
         this.userId = userId;
 
     }
-
+    @Override
     public Map<String, Object> getProcedureParams(){
         Map<String,Object> paramTranslations = new HashMap<>();
 
