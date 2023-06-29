@@ -1,4 +1,4 @@
-package mag.controller;
+package mag.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CheckOrderResponse {
-
     private List<OrderItem> orderItems;
-
 }

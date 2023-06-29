@@ -1,23 +1,44 @@
 package mag.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import mag.controller.request.AddOrderRequest;
+import mag.controller.response.AddOrderResponse;
+import mag.controller.response.CheckOrderResponse;
 import mag.service.OrderService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 public class OrderController {
-
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public AddOrderResponse addOrder(@RequestBody AddOrderRequest orderRequest, Authentication authentication) {
-        return orderService.addOrder(orderRequest, authentication);
+    public ResponseEntity<AddOrderResponse> addOrder(@RequestBody @Valid AddOrderRequest orderRequest, Authentication authentication) {
+        return ResponseEntity.ok().body(orderService.addOrder(orderRequest, authentication));
     }
 
     @GetMapping("/orders/{orderId}")
-    public CheckOrderResponse checkOrder(@PathVariable long orderId) {
-        return orderService.checkOrder(orderId);
+    public ResponseEntity<CheckOrderResponse> checkOrder(@PathVariable long orderId) {
+        CheckOrderResponse checkOrderResponse = orderService.checkOrder(orderId);
+        if (checkOrderResponse.getOrderItems() != null) {
+            return ResponseEntity.ok(checkOrderResponse);
+        }
+        return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/orders/{orderId}")
+    public ResponseEntity<HttpStatus> cancelOrder(@PathVariable long orderId) {
+        if (orderService.cancelOrder(orderId)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
 }

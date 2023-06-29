@@ -22,7 +22,7 @@ public class User {
     private boolean enabled;
 
     @JsonIgnore
-    public List<String> getRoles(){
+    public List<String> getRoles() {
         return List.of("USER");
     }
 

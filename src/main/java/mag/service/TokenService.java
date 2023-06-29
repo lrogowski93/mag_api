@@ -1,7 +1,7 @@
 package mag.service;
 
 import lombok.RequiredArgsConstructor;
-import mag.controller.TokenResponse;
+import mag.controller.response.TokenResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +35,7 @@ public class TokenService {
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    public TokenResponse getTokenResponse(Authentication authentication){
+    public TokenResponse getTokenResponse(Authentication authentication) {
         return new TokenResponse(generateToken(authentication), expirationTime);
     }
 

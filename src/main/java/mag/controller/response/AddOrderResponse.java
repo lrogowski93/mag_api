@@ -1,4 +1,4 @@
-package mag.controller;
+package mag.controller.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class AddOrderRequest {
+public class AddOrderResponse {
+    private String status;
+    private long orderId;
     private List<OrderItem> orderItems;
-    private String notes;
-
 }

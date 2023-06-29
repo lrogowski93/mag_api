@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-
 import javax.sql.DataSource;
 
 
@@ -20,13 +19,13 @@ public class DatabaseConfig {
     @Primary
     @Bean(name = "authDataSource")
     @ConfigurationProperties(prefix = "auth.datasource")
-    public DataSource authDataSource(){
+    public DataSource authDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean(name = "magDataSource")
     @ConfigurationProperties(prefix = "mag.datasource")
-    public DataSource magDataSource(){
+    public DataSource magDataSource() {
         return DataSourceBuilder.create().build();
     }
 
@@ -36,12 +35,12 @@ public class DatabaseConfig {
         return new JdbcTemplate(authDataSource);
     }
 
-    @Bean(name ="magJdbcTemplate")
+    @Bean(name = "magJdbcTemplate")
     public JdbcTemplate magJdbcTemplate(@Qualifier("magDataSource") DataSource magDataSource) {
         return new JdbcTemplate(magDataSource);
     }
 
-    @Bean(name ="magJdbcTemplateNamedParameter")
+    @Bean(name = "magJdbcTemplateNamedParameter")
     public NamedParameterJdbcTemplate magJdbcTemplateNamedParameter(@Qualifier("magDataSource") DataSource magDataSource) {
         return new NamedParameterJdbcTemplate(magDataSource);
     }

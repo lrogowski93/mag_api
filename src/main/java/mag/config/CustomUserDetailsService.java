@@ -1,4 +1,3 @@
-
 package mag.config;
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package mag.controller;
+package mag.controller.response;
 
 import lombok.Getter;
 
