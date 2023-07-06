@@ -7,6 +7,7 @@ import mag.model.procedure.output.AddOrderHeaderOutput;
 import mag.model.procedure.output.GetNumFormatOutput;
 import mag.model.procedure.output.ProcedureOutput;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -73,5 +74,14 @@ public class HelperMethodsService {
         Object resultSet = ((Map<?, ?>) ((List<?>) outParameters.get("#result-set-1")).get(0)).get("");
         BigDecimal orderId = (BigDecimal) resultSet;
         return orderId.longValue();
+    }
+
+    public String getOrderStatus(long orderId) {
+        try {
+            String sqlQuery = "SELECT STATUS_ZAM FROM ZAMOWIENIE WHERE ID_ZAMOWIENIA=?";
+            return magJdbcTemplate.queryForObject(sqlQuery, String.class, orderId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 }

@@ -2,7 +2,6 @@ package mag.service;
 
 import mag.model.OrderItem;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,22 +11,19 @@ import java.util.List;
 public class CheckOrderStatusService {
 
     private final JdbcTemplate magJdbcTemplate;
+    private final HelperMethodsService helperMethodsService;
 
-    public CheckOrderStatusService(@Qualifier("magJdbcTemplate") JdbcTemplate magJdbcTemplate) {
+    public CheckOrderStatusService(@Qualifier("magJdbcTemplate") JdbcTemplate magJdbcTemplate, HelperMethodsService helperMethodsService) {
         this.magJdbcTemplate = magJdbcTemplate;
+        this.helperMethodsService = helperMethodsService;
     }
 
-    public boolean isOrderConfirmed(Long orderId) {
-        try {
-            String sqlQuery = "SELECT STATUS_ZAM FROM ZAMOWIENIE WHERE ID_ZAMOWIENIA=?";
-            String orderStatus = magJdbcTemplate.queryForObject(sqlQuery, String.class, orderId);
-            return orderStatus.equals("V");
-        } catch (EmptyResultDataAccessException ex) {
-            return false;
-        }
+    public boolean isOrderConfirmed(long orderId) {
+        String orderStatus = helperMethodsService.getOrderStatus(orderId);
+        return orderStatus != null && orderStatus.equals("V");
     }
 
-    public List<OrderItem> getConfirmedOrderItems(Long orderId) {
+    public List<OrderItem> getConfirmedOrderItems(long orderId) {
 
         String sqlQuery = "SELECT a.INDEKS_HANDLOWY, p.ZAREZERWOWANO, p.OPIS," +
                 " p.CENA_NETTO, p.CENA_BRUTTO, p.KOD_VAT FROM POZYCJA_ZAMOWIENIA p" +

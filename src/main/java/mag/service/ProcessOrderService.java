@@ -31,7 +31,7 @@ public class ProcessOrderService {
         return orderItems.stream().map(OrderItem::getIndex).collect(Collectors.toList());
     }
 
-    public void setItemDetails(OrderItem loopItem, List<OrderItem> orderItems) {
+    private void setItemDetails(OrderItem loopItem, List<OrderItem> orderItems) {
         OrderItem singleFound = orderItems.stream()
                 .filter(
                         item -> item.getIndex().equals(loopItem.getIndex())
