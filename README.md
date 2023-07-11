@@ -49,7 +49,10 @@ spring.jpa.hibernate.ddl-auto=create
 ```sqk
 INSERT INTO users(mag_id, username, password, enabled) VALUES (1234,'user','{bcrypt}PUT_HERE_PASSWORD_HASH',1)
 ```
-6. Run app by using following command:
+
+6. Provide public/private RSA [key pair](/src/main/resources/certs). You can use [key generator](https://cryptotools.net/rsagen)  or generate keys manually with OpenSSL.
+
+7. Run app by using following command:
 ```bash
 gradlew bootRun
 ```
