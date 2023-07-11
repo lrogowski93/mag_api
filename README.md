@@ -13,7 +13,7 @@
 ```bash
 git clone https://github.com/lrogowski93/mag_api
 ```
-2. Change name of [EXAMPLE_application.properties](/src/main/resources/application.properties) file to application.properties.
+2. Change name of [EXAMPLE_application.properties](/src/main/resources/EXAMPLE_application.properties) file to application.properties.
 3. Set up config in application.properties file (access to Mag database, authentication database, Mag config).
 * Wapro Mag configuration is based on official [SQL documentation](https://wapro24bis.assecobs.pl/plikownia/WAPRO%20Mag/Dokumentacja%20techniczna/WAPRO%20Mag%20Dokumentacja%20procedur%20SQL.pdf):
 ```properties
@@ -160,3 +160,9 @@ gradlew bootRun
 
 ## Appendix
 SQL procedures and their parameters names may be confusing and unclear, this is due to the way they are programmed by the manufacturer of the Wapro Mag software. The manufacturer uses the Polish language in its procedures. I tried to translate everything as accurately as possible. Some procedure parameters are obsolete but has to be used. If you need more specific configuration you can look at official [SQL documentation](https://wapro24bis.assecobs.pl/plikownia/WAPRO%20Mag/Dokumentacja%20techniczna/WAPRO%20Mag%20Dokumentacja%20procedur%20SQL.pdf) (it can contain typos and errors) and modify [SQL procedure classes](/src/main/java/mag/model/procedure) as you wish.
+
+## License
+This project is licensed under the MIT license. Please see the [LICENSE](/LICENSE) file distributed with this source code for further information.
+
+Be aware that Wapro Mag software is not licensed under the MIT. Check out official website to read about terms, pricing and license of Wapro Mag before using their software:
+* [wapro.pl](https://wapro.pl/)
