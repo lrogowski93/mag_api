@@ -1,3 +1,17 @@
+# Mag_API
+
+## Description
+Simple REST Api for placing orders in Wapro Mag without knowledge of SQL procedures or database schema.
+
+All you have to do is prepare JSON request with list of ordered products. Required procedures and functions are called in the background.
+
+## Features
+
+- placing order with specified products (quantity, price, notes)
+- canceling not confirmed orders
+- checking order status
+- authentication using JWT
+
 ## Tech Stack
 
 * Java 17
