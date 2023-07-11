@@ -65,9 +65,11 @@ gradlew bootRun
   POST /signin
 ```
 #### Header
-| Parameter       | Description                                            |
-|-----------------|--------------------------------------------------------|
-| `Authorization` | **Required** `Basic login:password` _(base64 encoded)_ |
+| Parameter       | Description                   |
+|-----------------|-------------------------------|
+| `Authorization` | **Required** `Basic` _{auth}_ |
+
+*{auth}* : `login:password` Base64 encoded
 
 #### Sign in response
 
@@ -77,12 +79,12 @@ gradlew bootRun
 | `token_type`   | string | Token type            |
 | `expires_in`   | long   | Token expiration time |
 
-### All endpoints other than _/signin_ must be secured with JWT
+### All requests other than _/signin_ must be secured with JWT
 #### Header
 
-| Parameter       | Description                   |
-|-----------------|-------------------------------|
-| `Authorization` | **Required** `Bearer` _token_ |
+| Parameter       | Description                     |
+|-----------------|---------------------------------|
+| `Authorization` | **Required** `Bearer` _{token}_ |
 
 
 ### Add order
@@ -114,10 +116,10 @@ gradlew bootRun
 }
 ```
 
-| Parameter    | Type             | Description                             |
-|--------------|------------------|-----------------------------------------|
-| `orderItems` | Array of objects | **Required** Array of orderItem objects |
-| `notes`      | String           | Order notes                             |
+| Parameter    | Type             | Description                                              |
+|--------------|------------------|----------------------------------------------------------|
+| `orderItems` | Array of objects | **Required** Array of orderItem objects (up to 50 items) |
+| `notes`      | String           | Order notes                                              |
 
 #### orderItem
 | Parameter     | Type    | Description           |

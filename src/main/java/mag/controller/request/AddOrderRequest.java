@@ -1,7 +1,7 @@
 package mag.controller.request;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @Validated
 public class AddOrderRequest {
-    @NotEmpty(message = "orderItems cannot be blank")
+    @Size(min=1, max=50, message = "orderItems size must be between 1 and 50")
     private List<@Valid OrderItem> orderItems;
     private String notes;
 }
