@@ -1,7 +1,0 @@
-# MAG_API
-
-Simple REST Api for placing orders in Wapro Mag without knowledge of SQL procedures or database schema.
-
-All you have to do is prepare JSON request with list of ordered products. Required procedures and functions are called in the background.
-
-Documentation and testing in progress...
