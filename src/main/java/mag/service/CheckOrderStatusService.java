@@ -18,8 +18,8 @@ public class CheckOrderStatusService {
         this.helperMethodsService = helperMethodsService;
     }
 
-    public boolean isOrderConfirmed(long orderId) {
-        String orderStatus = helperMethodsService.getOrderStatus(orderId);
+    public boolean isOrderConfirmed(long orderId, String username) {
+        String orderStatus = helperMethodsService.getOrderStatus(orderId,username);
         return orderStatus != null && orderStatus.equals("V");
     }
 

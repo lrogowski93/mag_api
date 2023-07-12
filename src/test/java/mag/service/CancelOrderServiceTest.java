@@ -21,18 +21,18 @@ class CancelOrderServiceTest {
     @Test
     void shouldCancelOrder() {
         //given
-        when(helperMethodsService.getOrderStatus(123L)).thenReturn("");
+        when(helperMethodsService.getOrderStatus(123L,"user")).thenReturn("");
         //then
-        assertTrue(cancelOrderService.cancelOrder(123L, 1L));
+        assertTrue(cancelOrderService.cancelOrder(123L, 1L,"user"));
         verify(helperMethodsService).callProcedure(any(CancelOrderProcedure.class));
     }
 
     @Test
     void shouldNotCancelOrder() {
         //given
-        when(helperMethodsService.getOrderStatus(123L)).thenReturn("V");
+        when(helperMethodsService.getOrderStatus(123L,"user")).thenReturn("V");
         //then
-        assertFalse(cancelOrderService.cancelOrder(123L, 1L));
+        assertFalse(cancelOrderService.cancelOrder(123L, 1L,"user"));
         verify(helperMethodsService, never()).callProcedure(any(CancelOrderProcedure.class));
     }
 }

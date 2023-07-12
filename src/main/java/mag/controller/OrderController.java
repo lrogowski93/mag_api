@@ -20,12 +20,12 @@ public class OrderController {
 
     @PostMapping("/orders")
     public ResponseEntity<AddOrderResponse> addOrder(@RequestBody @Valid AddOrderRequest orderRequest, Authentication authentication) {
-        return ResponseEntity.ok().body(orderService.addOrder(orderRequest, authentication));
+        return ResponseEntity.ok().body(orderService.addOrder(orderRequest, authentication.getName()));
     }
 
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<CheckOrderResponse> checkOrder(@PathVariable long orderId) {
-        CheckOrderResponse checkOrderResponse = orderService.checkOrder(orderId);
+    public ResponseEntity<CheckOrderResponse> checkOrder(@PathVariable long orderId, Authentication authentication) {
+        CheckOrderResponse checkOrderResponse = orderService.checkOrder(orderId, authentication.getName());
         if (checkOrderResponse.getOrderItems() != null) {
             return ResponseEntity.ok(checkOrderResponse);
         }
@@ -33,8 +33,8 @@ public class OrderController {
     }
 
     @DeleteMapping("/orders/{orderId}")
-    public ResponseEntity<HttpStatus> cancelOrder(@PathVariable long orderId) {
-        if (orderService.cancelOrder(orderId)) {
+    public ResponseEntity<HttpStatus> cancelOrder(@PathVariable long orderId, Authentication authentication) {
+        if (orderService.cancelOrder(orderId, authentication.getName())) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

@@ -34,7 +34,6 @@ class OrderServiceTest {
     private Authentication authentication;
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private HelperMethodsService helperMethodsService;
     @Mock
@@ -48,7 +47,6 @@ class OrderServiceTest {
     @Test
     void shouldAddOrder() {
         //given
-        when(authentication.getName()).thenReturn("username");
         when(userRepository.findByUsername("username")).thenReturn(Optional.of(mock(User.class)));
         when(addOrderService.addOrderHeader(any(AddOrderHeaderProcedure.class))).thenReturn(12345L);
         when(processOrderService.getOrderItemIds(anyList())).thenReturn(List.of(
@@ -60,7 +58,7 @@ class OrderServiceTest {
         when(addOrderService.getNumFormat(any(GetNumFormatProcedure.class))).thenReturn(mock(GetNumFormatOutput.class));
         when(addOrderService.confirmOrder(any(ConfirmOrderProcedure.class))).thenReturn(0);
         //when
-        AddOrderResponse result = orderService.addOrder(mock(AddOrderRequest.class), authentication);
+        AddOrderResponse result = orderService.addOrder(mock(AddOrderRequest.class), "username");
         //then
         assertEquals(12345L, result.getOrderId());
         assertEquals("OK", result.getStatus());

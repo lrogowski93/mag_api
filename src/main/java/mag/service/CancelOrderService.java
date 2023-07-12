@@ -12,13 +12,13 @@ public class CancelOrderService {
         this.helperMethodsService = helperMethodsService;
     }
 
-    private boolean canOrderBeCancelled(long orderId) {
-        String orderStatus = helperMethodsService.getOrderStatus(orderId);
+    private boolean canOrderBeCancelled(long orderId, String username) {
+        String orderStatus = helperMethodsService.getOrderStatus(orderId, username);
         return orderStatus != null && (orderStatus.equals(" ") || orderStatus.equals(""));
     }
 
-    public boolean cancelOrder(long orderId, long userId) {
-        if (canOrderBeCancelled(orderId)) {
+    public boolean cancelOrder(long orderId, long userId, String username) {
+        if (canOrderBeCancelled(orderId, username)) {
             helperMethodsService.callProcedure(new CancelOrderProcedure(orderId, userId));
             return true;
         }

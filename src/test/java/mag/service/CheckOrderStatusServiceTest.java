@@ -29,17 +29,17 @@ class CheckOrderStatusServiceTest {
     @Test
     void shouldOrderBeConfirmed() {
         //given
-        when(helperMethodsService.getOrderStatus(123L)).thenReturn("V");
+        when(helperMethodsService.getOrderStatus(123L,"user")).thenReturn("V");
         //then
-        assertTrue(checkOrderStatusService.isOrderConfirmed(123L));
+        assertTrue(checkOrderStatusService.isOrderConfirmed(123L,"user"));
     }
 
     @Test
     void shouldOrderBeNotConfirmed() {
         //given
-        when(helperMethodsService.getOrderStatus(123L)).thenReturn("");
+        when(helperMethodsService.getOrderStatus(123L,"user")).thenReturn("");
         //then
-        assertFalse(checkOrderStatusService.isOrderConfirmed(123L));
+        assertFalse(checkOrderStatusService.isOrderConfirmed(123L,"user"));
     }
 
     @Test

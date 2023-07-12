@@ -11,7 +11,6 @@ import mag.model.procedure.ConfirmOrderProcedure;
 import mag.model.procedure.GetNumFormatProcedure;
 import mag.model.procedure.output.GetNumFormatOutput;
 import mag.repository.UserRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,8 +28,8 @@ public class OrderService {
     private final MagConfig magConfig;
 
 
-    public AddOrderResponse addOrder(AddOrderRequest request, Authentication authentication) {
-        long customerMagId = userRepository.findByUsername(authentication.getName()).get().getMagId();
+    public AddOrderResponse addOrder(AddOrderRequest request, String username) {
+        long customerMagId = userRepository.findByUsername(username).get().getMagId();
         long newOrderId = addOrderService.addOrderHeader(
                 new AddOrderHeaderProcedure(magConfig, customerMagId, helperMethodsService.getCurrentDate())
         );
@@ -54,15 +53,15 @@ public class OrderService {
                 .status(returnValues == 0 ? "OK" : "Errors occurred").build();
     }
 
-    public CheckOrderResponse checkOrder(long orderId) {
-        if (checkOrderStatusService.isOrderConfirmed(orderId)) {
+    public CheckOrderResponse checkOrder(long orderId, String username) {
+        if (checkOrderStatusService.isOrderConfirmed(orderId, username)) {
             return new CheckOrderResponse(checkOrderStatusService.getConfirmedOrderItems(orderId));
         }
         return new CheckOrderResponse();
     }
 
-    public boolean cancelOrder(long orderId) {
-        return cancelOrderService.cancelOrder(orderId, magConfig.userId());
+    public boolean cancelOrder(long orderId, String username) {
+        return cancelOrderService.cancelOrder(orderId, magConfig.userId(),username);
     }
 
 }
